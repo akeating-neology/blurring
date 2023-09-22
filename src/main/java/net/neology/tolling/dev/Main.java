@@ -95,23 +95,38 @@ public class Main {
                 if(doTheThing(x,y)) {
 //                    clr = clr & 0x00000000; //make black
 
+                   int pix=0;
                     //3x3 kernel
+//                    (x & y) + ((x ^ y) >> 1)
                     try {
-                        diff1 = image.getRGB(x-1,y-1);
-                        diff2 = image.getRGB(x-1,y); //2
-                        diff3 = image.getRGB(x-1,y+1);
-                        diff4 = image.getRGB(x+1,y-1);
-                        diff5 = image.getRGB(x+1,y); //2
-                        diff6 = image.getRGB(x+1,y+1);
-                        diff7 = image.getRGB(x,y+1); //2
-                        diff8 = image.getRGB(x,y-1); //2
-
-                        //1,3,4,6 //2,5,7,8 x2
-                        int blur = (diff1+diff3+diff4+diff6)
-                                + ((diff2+diff5+diff7+diff8)*2)
-                                + clr*4;
-                        blur = blur /16;
-
+                        pix = (int)(
+                                10*(image.getRGB(x+3, y+3)& 0xFF)
+                                        + 6*(image.getRGB(x+1, y+2)& 0xFF)
+                                        + 6*(image.getRGB(x+2, y+3)& 0xFF)
+                                        + 6*(image.getRGB(x+3, y+2)& 0xFF)
+                                        + 6*(image.getRGB(x+2, y+1)& 0xFF)
+                                        + 4*(image.getRGB(x+1, y+1)& 0xFF)
+                                        + 4*(image.getRGB(x+1, y+3)& 0xFF)
+                                        + 4*(image.getRGB(x+3, y+1)& 0xFF)
+                                        + 4*(image.getRGB(x+3, y+3)& 0xFF)
+                                        + 2*(image.getRGB(x, y+1)& 0xFF)
+                                        + 2*(image.getRGB(x, y+2)& 0xFF)
+                                        + 2*(image.getRGB(x, y+3)& 0xFF)
+                                        + 2*(image.getRGB(x+4, y+1)& 0xFF)
+                                        + 2*(image.getRGB(x+4, y+2)& 0xFF)
+                                        + 2*(image.getRGB(x+4, y+3)& 0xFF)
+                                        + 2*(image.getRGB(x+1, y)& 0xFF)
+                                        + 2*(image.getRGB(x+2, y)& 0xFF)
+                                        + 2*(image.getRGB(x+3, y)& 0xFF)
+                                        + 2*(image.getRGB(x+1, y+4)& 0xFF)
+                                        + 2*(image.getRGB(x+2, y+4)& 0xFF)
+                                        + 2*(image.getRGB(x+3, y+4)& 0xFF)
+                                        + (image.getRGB(x, y)& 0xFF)
+                                        + (image.getRGB(x, y+2)& 0xFF)
+                                        + (image.getRGB(x+2, y)& 0xFF)
+                                        + (image.getRGB(x+2, y+2)& 0xFF))/74;
+                        int p = (255<<24) | (pix<<16) | (pix<<8) | pix;
+                        resultImage.setRGB(x, y, p);
 
                     } catch (Exception e) {
                         //  Block of code to handle errors
@@ -119,7 +134,8 @@ public class Main {
                 }
 
 
-                resultImage.setRGB(x, y, clr);
+//                resultImage.setRGB(x, y, clr);
+
             }
         }
         slow = System.currentTimeMillis() - slow;
