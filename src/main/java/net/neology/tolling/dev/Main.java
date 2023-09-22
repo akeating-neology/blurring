@@ -91,50 +91,14 @@ public class Main {
                 int  green = (clr & 0x0000ff00) >> 8;
                 int  blue  =  clr & 0x000000ff;
 
-                int diff1,diff2,diff3,diff4,diff5,diff6,diff7,diff8;
                 if(doTheThing(x,y)) {
-//                    clr = clr & 0x00000000; //make black
+                    clr = clr & 0x00000000; //make black
 
-                   int pix=0;
-                    //3x3 kernel
-//                    (x & y) + ((x ^ y) >> 1)
                     try {
-                        pix = (int)(
-                                10*(image.getRGB(x+3, y+3)& 0xFF)
-                                        + 6*(image.getRGB(x+1, y+2)& 0xFF)
-                                        + 6*(image.getRGB(x+2, y+3)& 0xFF)
-                                        + 6*(image.getRGB(x+3, y+2)& 0xFF)
-                                        + 6*(image.getRGB(x+2, y+1)& 0xFF)
-                                        + 4*(image.getRGB(x+1, y+1)& 0xFF)
-                                        + 4*(image.getRGB(x+1, y+3)& 0xFF)
-                                        + 4*(image.getRGB(x+3, y+1)& 0xFF)
-                                        + 4*(image.getRGB(x+3, y+3)& 0xFF)
-                                        + 2*(image.getRGB(x, y+1)& 0xFF)
-                                        + 2*(image.getRGB(x, y+2)& 0xFF)
-                                        + 2*(image.getRGB(x, y+3)& 0xFF)
-                                        + 2*(image.getRGB(x+4, y+1)& 0xFF)
-                                        + 2*(image.getRGB(x+4, y+2)& 0xFF)
-                                        + 2*(image.getRGB(x+4, y+3)& 0xFF)
-                                        + 2*(image.getRGB(x+1, y)& 0xFF)
-                                        + 2*(image.getRGB(x+2, y)& 0xFF)
-                                        + 2*(image.getRGB(x+3, y)& 0xFF)
-                                        + 2*(image.getRGB(x+1, y+4)& 0xFF)
-                                        + 2*(image.getRGB(x+2, y+4)& 0xFF)
-                                        + 2*(image.getRGB(x+3, y+4)& 0xFF)
-                                        + (image.getRGB(x, y)& 0xFF)
-                                        + (image.getRGB(x, y+2)& 0xFF)
-                                        + (image.getRGB(x+2, y)& 0xFF)
-                                        + (image.getRGB(x+2, y+2)& 0xFF))/74;
-                        int p = (255<<24) | (pix<<16) | (pix<<8) | pix;
-                        resultImage.setRGB(x, y, p);
 
-                    } catch (Exception e) {
-                        //  Block of code to handle errors
-                    }
+                    } catch (Exception e) {}
                 }
-
-
-//                resultImage.setRGB(x, y, clr);
+                resultImage.setRGB(x, y, clr);
 
             }
         }
