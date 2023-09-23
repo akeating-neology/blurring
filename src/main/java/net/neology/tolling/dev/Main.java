@@ -34,7 +34,8 @@ public class Main {
 
     static void Test() throws IOException {
 
-        BufferedImage input = ImageIO.read(Main.class.getResourceAsStream("/trximg.jpg"));
+        BufferedImage input = new BufferedImage(100,100,BufferedImage.TYPE_3BYTE_BGR);
+                input = ImageIO.read(Main.class.getResourceAsStream("/trximg.jpg"));
         BufferedImage resultImage = input.getSubimage(0,0,input.getWidth(),input.getHeight());
         PrivacyCords p = new PrivacyCords(270,0,1400,600,520,0,1111,170);
         int pixelation = 12;
@@ -50,16 +51,17 @@ public class Main {
                 }
             }
         }
-        //openJDK doesn't have a native jpg encoder -.-
+        //openJDK doesn't have a native jpg encoder after 11 -.- (but I assume it works in LEZ. wonder why/how)
         //https://stackoverflow.com/questions/3432388/imageio-not-able-to-write-a-jpeg-file
-        Boolean success = ImageIO.write(resultImage, "png", new File("C:\\Users\\akeating\\Neology\\blurring\\target\\resultimage.jpg"));
+        //https://bugs.openjdk.org/browse/JDK-8204188
+        Boolean success = ImageIO.write(resultImage, "jpg", new File("./target/resultimage.jpg"));
         System.out.println(success);
         System.out.println("debugbreakpoint");
     }
 
     public static BufferedImage resize(BufferedImage img, int newW, int newH) {
         Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_FAST);
-        BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_3BYTE_BGR);
 
         Graphics2D g2d = dimg.createGraphics();
         g2d.drawImage(tmp, 0, 0, null);
