@@ -26,85 +26,97 @@ public class Main {
     Color c[];
 
     Main() throws IOException, InterruptedException {
-//        File f = new File();
-        InputStream inputStream = getClass().getResourceAsStream("/trximg.jpg");
-        BufferedImage im = ImageIO.read(inputStream);
-        Long slow = System.currentTimeMillis();
 
-        BufferedImage bi = new BufferedImage(im.getWidth(), im.getHeight(), BufferedImage.TYPE_INT_RGB);
-        int i = 0;
-        int max = 400, radius = 10;
-        int a1 = 0, r1 = 0, g1 = 0, b1 = 0;
-        c = new Color[max];
-        int x = 1, y = 1, x1, y1, ex = 5, d = 0;
-        for (x = radius; x < im.getHeight() - radius; x++) {
-            for (y = radius; y < im.getWidth() - radius; y++) {
-
-                //20x20 matrix
-                for (x1 = x - radius; x1 < x + radius; x1++) {
-                    for (y1 = y - radius; y1 < y + radius; y1++) {
-                        c[i++] = new Color(im.getRGB(y1, x1));
-                        //System.out.println(i);
-                    }
-                }
-                i = 0;
-
-                for (d = 0; d < max; d++) {
-                    a1 = a1 + c[d].getAlpha();
-                }
-                a1 = a1 / (max);
-
-                for (d = 0; d < max; d++) {
-                    r1 = r1 + c[d].getRed();
-                }
-                r1 = r1 / (max);
-
-                for (d = 0; d < max; d++) {
-                    g1 = g1 + c[d].getGreen();
-                }
-                g1 = g1 / (max);
-
-                for (d = 0; d < max; d++) {
-                    b1 = b1 + c[d].getBlue();
-                }
-                b1 = b1 / (max);
-                int sum1 = (a1 << 24) + (r1 << 16) + (g1 << 8) + b1;
-                bi.setRGB(y, x, (int) (sum1));
-
-            }
-        }
-        System.out.println(slow = System.currentTimeMillis() - slow);
-
-//        ImageIO.write(bi, "jpg", new File("/x1.jpg"));
     }
 
     static void Test() throws IOException {
+
+        Color color[];
+
+        // Creating a File class object to
+        // read the image in the form of file from directory
+
+        // Directory path is passed as an argument
         InputStream inputStream = Main.class.getResourceAsStream("/trximg.jpg");
-        BufferedImage image = ImageIO.read(inputStream);
+        BufferedImage input = ImageIO.read(inputStream);
         BufferedImage resultImage = ImageIO.read(Main.class.getResourceAsStream("/trximg.jpg"));
 
-        Long slow = System.currentTimeMillis();
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-                int  clr   = image.getRGB(x, y);
-                int  red   = (clr & 0x00ff0000) >> 16;
-                int  green = (clr & 0x0000ff00) >> 8;
-                int  blue  =  clr & 0x000000ff;
+        // Now object of BufferedImage class is created to
+        // convert file into image form
 
-                if(doTheThing(x,y)) {
-                    clr = clr & 0x00000000; //make black
 
-                    try {
+        // Again creating an object of BufferedImage to
+        // create output Image
+        BufferedImage output = new BufferedImage(
+                input.getWidth(), input.getHeight(),
+                BufferedImage.TYPE_INT_RGB);
 
-                    } catch (Exception e) {}
+        // Setting dimensions for the image to be processed
+        int i = 0;
+        int max = 400, rad = 10;
+        int a1 = 0, r1 = 0, g1 = 0, b1 = 0;
+        color = new Color[max];
+
+        // Now this core section of code is responsible for
+        // blurring of an image
+        System.out.println("here");
+        int x = 1, y = 1, x1, y1, ex = 5, d = 0;
+
+        // Running nested for loops for each pixel
+        // and blurring it
+        for (x = rad; x < input.getHeight() - rad; x++) {
+            for (y = rad; y < input.getWidth() - rad; y++) {
+                for (x1 = x - rad; x1 < x + rad; x1++) {
+                    for (y1 = y - rad; y1 < y + rad; y1++) {
+                        color[i++] = new Color(
+                                input.getRGB(y1, x1));
+                    }
                 }
-                resultImage.setRGB(x, y, clr);
 
+                // Smoothing colors of image
+                i = 0;
+                for (d = 0; d < max; d++) {
+                    a1 = a1 + color[d].getAlpha();
+                }
+
+                a1 = a1 / (max);
+                for (d = 0; d < max; d++) {
+                    r1 = r1 + color[d].getRed();
+                }
+
+                r1 = r1 / (max);
+                for (d = 0; d < max; d++) {
+                    g1 = g1 + color[d].getGreen();
+                }
+
+                g1 = g1 / (max);
+                for (d = 0; d < max; d++) {
+                    b1 = b1 + color[d].getBlue();
+                }
+
+                b1 = b1 / (max);
+                int sum1 = (a1 << 24) + (r1 << 16)
+                        + (g1 << 8) + b1;
+                output.setRGB(y, x, (int)(sum1));
             }
         }
-        slow = System.currentTimeMillis() - slow;
-        System.out.println(slow);
+
+        // Writing the blurred image on the disc where
+        // directory is passed as an argument
+
+
+        // Message to be displayed in the console when
+        // program is successfully executed
+        System.out.println("Image blurred successfully !");
+
+
+
+
+
+        System.out.println("debugbreakpoint");
     }
+
+
 
 
     private static boolean doTheThing(int x, int y) {
