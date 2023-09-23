@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -33,27 +34,26 @@ public class Main {
 
     static void Test() throws IOException {
 
-        Color color[];
-        Color c[];
-        // Creating a File class object to
-        // read the image in the form of file from directory
+        BufferedImage input = ImageIO.read(Main.class.getResourceAsStream("/trximg.jpg"));
+        BufferedImage resultImage = input.getSubimage(0,0,input.getWidth(),input.getHeight());
+        PrivacyCords p = new PrivacyCords(270,0,1400,600,520,0,1111,170);
+        int pixelation = 12;
 
-        // Directory path is passed as an argument
-        InputStream inputStream = Main.class.getResourceAsStream("/trximg.jpg");
-        BufferedImage input = ImageIO.read(inputStream);
-        BufferedImage resultImage = ImageIO.read(Main.class.getResourceAsStream("/trximg.jpg"));
-
-//        ConvolveOp op = new ConvolveOp(new Kernel(3, 3,
-//                new float[] { 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f, 1f / 9f }),
-//                ConvolveOp.EDGE_NO_OP, null);
-//        resultImage = op.filter(input,null);
-
-//        Image tempImage = resultImage.getScaledInstance(, Image.);
-//        BufferedImage tempBufImage = resize(resultImage, resultImage.getWidth()/4, resultImage.getHeight()/4);
-        resultImage =  resize(resultImage, input.getWidth()/12, input.getHeight()/12);
+        //This is way faster than blurring...
+        resultImage =  resize(resultImage, input.getWidth()/pixelation, input.getHeight()/pixelation);
         resultImage =  resize(resultImage, input.getWidth(), input.getHeight());
 
-
+        for (int y = 0; y < input.getHeight(); y++) {
+            for (int x = 0; x < input.getWidth(); x++) {
+                if(doTheThing(x,y,p)) {
+                    resultImage.setRGB(x, y, input.getRGB(x, y));
+                }
+            }
+        }
+        //openJDK doesn't have a native jpg encoder -.-
+        //https://stackoverflow.com/questions/3432388/imageio-not-able-to-write-a-jpeg-file
+        Boolean success = ImageIO.write(resultImage, "png", new File("C:\\Users\\akeating\\Neology\\blurring\\target\\resultimage.jpg"));
+        System.out.println(success);
         System.out.println("debugbreakpoint");
     }
 
@@ -69,25 +69,18 @@ public class Main {
     }
 
 
-    private static boolean doTheThing(int x, int y) {
-        int outXone = 270;
-        int outYone = 1;
-        int outXtwo = 1400;
-        int outYtwo = 600;
-        int windXone = 520;
-        int windYone = 2;
-        int windXtwo = 1111;
-        int windYtwo = 170;
+    private static boolean doTheThing(int x, int y, PrivacyCords p) {
+
 
         if (
-                !( (x > 270 && y >2)  && (x < 1430 && y < 600) )
+                !( (x > p.getOutXone() && y > p.getOutYone())  && (x < p.getOutXtwo() && y < p.getOutYtwo()) )
                 ||
-                ( (x > 520 && y >2)  && (x < 1111 && y < 170) )
+                ( (x > p.getWindXone() && y > p.getWindYone())  && (x < p.getWindXtwo() && y < p.getWindYtwo()) )
         ) {
-            return true;
+            return false;
         }
         else {
-            return false;
+            return true;
         }
     }
 
