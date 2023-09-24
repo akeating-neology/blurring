@@ -1,7 +1,54 @@
 package net.neology.tolling.dev;
 
+/**
+ *
+ */
 public class PrivacyCords {
 
+    /**
+     *
+     */
+    private enum Version {MALFORMED,V1,V2};
+
+    //V2 set of cords to also obscure the rest of the image that does not include the vehicle of interest
+    private int outXone = -1;
+    private int outYone = -1;
+    private int outXtwo = -1;
+    private int outYtwo = -1;
+    //Original set of cords to obscure windscreen of a vehicle
+    private int windXone = -1;
+    private int windYone = -1;
+    private int windXtwo = -1;
+    private int windYtwo = -1;
+
+    private Version myVersion;
+
+    /**
+     *
+     * @param windXone
+     * @param windYone
+     * @param windXtwo
+     * @param windYtwo
+     */
+    public PrivacyCords(int windXone, int windYone, int windXtwo, int windYtwo) {
+        this.windXone = windXone;
+        this.windYone = windYone;
+        this.windXtwo = windXtwo;
+        this.windYtwo = windYtwo;
+        this.myVersion = validateVersion();
+    }
+
+    /**
+     *
+     * @param outXone
+     * @param outYone
+     * @param outXtwo
+     * @param outYtwo
+     * @param windXone
+     * @param windYone
+     * @param windXtwo
+     * @param windYtwo
+     */
     public PrivacyCords(int outXone, int outYone, int outXtwo, int outYtwo, int windXone, int windYone, int windXtwo, int windYtwo) {
         this.outXone = outXone;
         this.outYone = outYone;
@@ -11,16 +58,34 @@ public class PrivacyCords {
         this.windYone = windYone;
         this.windXtwo = windXtwo;
         this.windYtwo = windYtwo;
+        this.myVersion = validateVersion();
     }
 
-    private int outXone = 0;
-    private int outYone = 0;
-    private int outXtwo = 0;
-    private int outYtwo = 0;
-    private int windXone = 0;
-    private int windYone = 0;
-    private int windXtwo = 0;
-    private int windYtwo = 0;
+    private Version validateVersion() {
+        Version v = Version.MALFORMED;
+        try {
+            if(
+                    (windXone >= 0 && windXtwo >= 0 && windYone >= 0 && windYtwo >=0)
+                    && windYone <= windYtwo
+                    && windXone <= windXtwo
+            )
+                v = Version.V1;
+            if (v == Version.V1) {
+                if (
+                        (outXone >= 0 && outXtwo >=0 && outYone >= 0 && outYtwo >=0)
+                        && outXone <= outXtwo
+                        && outYone <= outYtwo
+                        //TODO:ak:add check to ensure outside is > than windscreen inside...assume for now that this will be used properly
+                )
+                    v = Version.V2;
+            }
+        }
+        catch (NullPointerException e) {
+            //TODO:ak:do stuff
+        }
+
+        return v;
+    }
 
     public int getOutXone() {
         return outXone;
@@ -84,5 +149,15 @@ public class PrivacyCords {
 
     public void setWindYtwo(int windYtwo) {
         this.windYtwo = windYtwo;
+    }
+
+    public Version getMyVersion() {
+        validateVersion();
+        return myVersion;
+    }
+
+    // If you wanna do this...I guess go ahead at your own risk?
+    public void setMyVersion(Version myVersion) {
+        this.myVersion = myVersion;
     }
 }
