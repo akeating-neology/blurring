@@ -79,7 +79,7 @@ public class MantisResponseData {
     }
 
     public MantisResponseDimension getCar() {
-        return windshield;
+        return car;
     }
 
     public void setCar(MantisResponseDimension car) {
