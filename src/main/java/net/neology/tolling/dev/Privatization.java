@@ -54,12 +54,11 @@ public class Privatization {
      * @return
      */
     private static boolean isInPrivacyZone(int x, int y, PrivacyCords p) {
-        boolean isOutsidePrivacyZone = (x > p.getOutXone() && y > p.getOutYone())
-                && (x < p.getOutXtwo() && y < p.getOutYtwo());
 
-        boolean isInsideWindow = (x > p.getWindXone() && y > p.getWindYone())
-                && (x < p.getWindXtwo() && y < p.getWindYtwo());
-
-        return (isOutsidePrivacyZone || isInsideWindow);
+        boolean isOutsidePrivacyZone = ( (x > p.getOutXone() && y > p.getOutYone())
+                && (x < p.getOutXtwo() && y < p.getOutYtwo()) );
+        boolean isInsideWindow = !( (x > p.getWindXone() && y > p.getWindYone())
+                && (x < p.getWindXtwo() && y < p.getWindYtwo()) );
+        return ( isOutsidePrivacyZone && isInsideWindow);
     }
 }
