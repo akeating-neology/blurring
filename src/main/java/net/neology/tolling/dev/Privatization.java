@@ -38,6 +38,6 @@ public class Privatization {
         boolean isInsideWindow = (x > p.getWindXone() && y > p.getWindYone())
                 && (x < p.getWindXtwo() && y < p.getWindYtwo());
 
-        return !(isOutsidePrivacyZone || isInsideWindow);
+        return (isOutsidePrivacyZone || isInsideWindow);
     }
 }
