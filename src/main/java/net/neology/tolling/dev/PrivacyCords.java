@@ -21,7 +21,7 @@ public class PrivacyCords {
     private int windXtwo = -1;
     private int windYtwo = -1;
 
-    private Version myVersion;
+    private Version myVersion = Version.MALFORMED;
 
     /**
      *
