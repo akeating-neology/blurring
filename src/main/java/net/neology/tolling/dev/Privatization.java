@@ -15,13 +15,13 @@ public class Privatization {
      * @throws IOException
      */
     public BufferedImage applyPrivatization(BufferedImage input, PrivacyCords pc, int pixelation) throws IOException {
+        BufferedImage resultImage = resize(input, input.getWidth() / pixelation, input.getHeight() / pixelation);
+        resultImage = resize(resultImage, input.getWidth(), input.getHeight());
 
-        BufferedImage resultImage =  resize(input, input.getWidth()/pixelation, input.getHeight()/pixelation);
-        resultImage =  resize(resultImage, input.getWidth(), input.getHeight());
 
         for (int y = 0; y < input.getHeight(); y++) {
             for (int x = 0; x < input.getWidth(); x++) {
-                if(transposeOriginalPixels(x,y,pc)) {
+                if (isInPrivacyZone(x, y, pc)) {
                     resultImage.setRGB(x, y, input.getRGB(x, y));
                 }
             }
@@ -46,7 +46,6 @@ public class Privatization {
 
         return dimg;
     }
-
     /**
      *
      * @param x
@@ -54,14 +53,13 @@ public class Privatization {
      * @param p
      * @return
      */
-    private boolean transposeOriginalPixels(int x, int y, PrivacyCords p) {
-        if (
-                !( (x > p.getOutXone() && y > p.getOutYone())  && (x < p.getOutXtwo() && y < p.getOutYtwo()) )
-                        ||
-                        ( (x > p.getWindXone() && y > p.getWindYone())  && (x < p.getWindXtwo() && y < p.getWindYtwo()) )
-        )
-        { return false; }
-        else
-        { return true; }
+    private static boolean isInPrivacyZone(int x, int y, PrivacyCords p) {
+        boolean isOutsidePrivacyZone = (x > p.getOutXone() && y > p.getOutYone())
+                && (x < p.getOutXtwo() && y < p.getOutYtwo());
+
+        boolean isInsideWindow = (x > p.getWindXone() && y > p.getWindYone())
+                && (x < p.getWindXtwo() && y < p.getWindYtwo());
+
+        return (isOutsidePrivacyZone || isInsideWindow);
     }
 }
