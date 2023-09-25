@@ -45,8 +45,6 @@ public class Main {
         mantisResponseData.setScores(new Float[] {0.99958736f, 0.9997273f});
         mantisResponseData.setTags(new String[] {"car", "windshield"});
 
-        PrivacyCords p = new PrivacyCords(270,0,1400,600,520,0,1111,170);
-
         MantisResponseDimension windshield = new MantisResponseDimension();
         windshield.setX0(520);
         windshield.setY0(0);
