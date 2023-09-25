@@ -14,7 +14,7 @@ public class Privatization {
      * @return
      * @throws IOException
      */
-    BufferedImage applyPrivatization(BufferedImage input, PrivacyCords pc, int pixelation) throws IOException {
+    public BufferedImage applyPrivatization(BufferedImage input, PrivacyCords pc, int pixelation) throws IOException {
 
         BufferedImage resultImage =  resize(input, input.getWidth()/pixelation, input.getHeight()/pixelation);
         resultImage =  resize(resultImage, input.getWidth(), input.getHeight());
@@ -36,7 +36,7 @@ public class Privatization {
      * @param newH
      * @return
      */
-    public static BufferedImage resize(BufferedImage img, int newW, int newH) {
+    private BufferedImage resize(BufferedImage img, int newW, int newH) {
         Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_FAST);
         BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_3BYTE_BGR);
 
@@ -54,7 +54,7 @@ public class Privatization {
      * @param p
      * @return
      */
-    private static boolean transposeOriginalPixels(int x, int y, PrivacyCords p) {
+    private boolean transposeOriginalPixels(int x, int y, PrivacyCords p) {
         if (
                 !( (x > p.getOutXone() && y > p.getOutYone())  && (x < p.getOutXtwo() && y < p.getOutYtwo()) )
                         ||
