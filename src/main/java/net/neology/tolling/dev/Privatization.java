@@ -6,9 +6,18 @@ import java.io.IOException;
 
 public class Privatization {
 
+    /**
+     *
+     * @param input
+     * @param pc
+     * @param pixelation
+     * @return
+     * @throws IOException
+     */
     public BufferedImage applyPrivatization(BufferedImage input, PrivacyCords pc, int pixelation) throws IOException {
         BufferedImage resultImage = resize(input, input.getWidth() / pixelation, input.getHeight() / pixelation);
         resultImage = resize(resultImage, input.getWidth(), input.getHeight());
+
 
         for (int y = 0; y < input.getHeight(); y++) {
             for (int x = 0; x < input.getWidth(); x++) {
@@ -20,7 +29,14 @@ public class Privatization {
         return resultImage;
     }
 
-    public static BufferedImage resize(BufferedImage img, int newW, int newH) {
+    /**
+     *
+     * @param img
+     * @param newW
+     * @param newH
+     * @return
+     */
+    private BufferedImage resize(BufferedImage img, int newW, int newH) {
         Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_FAST);
         BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_3BYTE_BGR);
 
@@ -30,7 +46,13 @@ public class Privatization {
 
         return dimg;
     }
-
+    /**
+     *
+     * @param x
+     * @param y
+     * @param p
+     * @return
+     */
     private static boolean isInPrivacyZone(int x, int y, PrivacyCords p) {
         boolean isOutsidePrivacyZone = (x > p.getOutXone() && y > p.getOutYone())
                 && (x < p.getOutXtwo() && y < p.getOutYtwo());
