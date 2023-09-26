@@ -1,10 +1,55 @@
 package net.neology.tolling.dev;
 
+import net.neology.tolling.dev.mantis.MantisResponse;
+import net.neology.tolling.dev.mantis.MantisResponseData;
+import net.neology.tolling.dev.mantis.MantisResponseDimension;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class Privatization {
+
+    /**
+     *
+     * @param input
+     * @param mantisResponse
+     * @param pixelation
+     * @return
+     * @throws IOException
+     */
+    public BufferedImage applyPrivatization(BufferedImage input, MantisResponse mantisResponse, int pixelation) throws IOException {
+
+        MantisResponseData mantisData = mantisResponse.getData().get(0);
+        MantisResponseDimension windshield = mantisData.getWindshield();
+        MantisResponseDimension car = mantisData.getCar();
+
+        PrivacyCords pc;
+        if(car != null ) { //V2
+            pc = new PrivacyCords(
+                    car.getX0()
+                    ,car.getY0()
+                    ,car.getX0() + car.getWidth()
+                    ,car.getY0() + car.getHeight()
+                    ,windshield.getX0()
+                    ,windshield.getY0()
+                    ,windshield.getX0() + windshield.getWidth()
+                    ,windshield.getY0() + windshield.getHeight()
+            );
+
+        }
+        else { //V1
+            pc = new PrivacyCords(
+                    car.getX0()
+                    , car.getY0()
+                    ,car.getX0() + car.getWidth()
+                    ,car.getY0() + car.getHeight()
+            );
+        }
+
+
+        return applyPrivatization(input, pc, pixelation);
+    }
 
     /**
      *
