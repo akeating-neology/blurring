@@ -30,6 +30,7 @@ public class PrivacyCords {
      * @param windXtwo
      * @param windYtwo
      */
+    @Deprecated
     public PrivacyCords(int windXone, int windYone, int windXtwo, int windYtwo) {
         this.windXone = windXone;
         this.windYone = windYone;
@@ -81,7 +82,8 @@ public class PrivacyCords {
             }
         }
         catch (NullPointerException e) {
-            //TODO:ak:do stuff
+            //TODO:ak:do better...
+            System.out.println("NPE ERROR:SOMETHINGWENTWRONG!");
         }
 
         return v;

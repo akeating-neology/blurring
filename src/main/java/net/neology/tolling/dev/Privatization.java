@@ -10,6 +10,13 @@ import java.io.IOException;
 
 public class Privatization {
 
+    public enum Strategy {
+        BLACK_WINDSHIELD_ONLY,
+        BLUR_WINDSHIELD_ONLY,
+        BLACK_WINDSHIELD_BLUR_EXTERIOR,
+        BLUR_WINDSHIELD_BLUR_EXTERIOR
+    }
+
     /**
      *
      * @param input
@@ -40,10 +47,15 @@ public class Privatization {
         }
         else { //V1
             pc = new PrivacyCords(
-                    car.getX0()
-                    , car.getY0()
-                    ,car.getX0() + car.getWidth()
-                    ,car.getY0() + car.getHeight()
+                    0
+                    ,0
+                    , input.getWidth()
+                    , input.getHeight()
+                    , windshield.getX0()
+                    , windshield.getY0()
+                    ,windshield.getX0() + windshield.getWidth()
+                    ,windshield.getY0() + windshield.getHeight()
+
             );
         }
 

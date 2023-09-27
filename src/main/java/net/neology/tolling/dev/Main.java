@@ -52,12 +52,12 @@ public class Main {
         windshield.setHeight(170);
         mantisResponseData.setWindshield(windshield);
 
-        MantisResponseDimension car = new MantisResponseDimension();
-        car.setX0(270);
-        car.setY0(0);
-        car.setWidth(1130);
-        car.setHeight(600);
-        mantisResponseData.setCar(car);
+//        MantisResponseDimension car = new MantisResponseDimension();
+//        car.setX0(270);
+//        car.setY0(0);
+//        car.setWidth(1130);
+//        car.setHeight(600);
+//        mantisResponseData.setCar(car);
 
         List<MantisResponseData> data = new ArrayList<>();
         data.add(mantisResponseData); //will add to index 0
