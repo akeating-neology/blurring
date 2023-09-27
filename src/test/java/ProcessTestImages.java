@@ -11,7 +11,7 @@ import java.io.IOException;
 public class ProcessTestImages {
 
     Privatization priv = new Privatization();
-    int pixelation = 12;
+    int pixelation = 20;
     String image;
     BufferedImage input;
     PrivacyCords p;
