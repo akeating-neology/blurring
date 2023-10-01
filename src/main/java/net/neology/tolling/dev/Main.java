@@ -25,7 +25,7 @@ public class Main {
 
 
         BufferedImage input = ImageIO.read(Main.class.getResourceAsStream("/trximg.jpg"));
-        BufferedImage bi = priv.applyPrivatization(input, mantisResponse, pixelation);
+        BufferedImage bi = priv.applyPrivatization(input, mantisResponse, pixelation, Privatization.Strategy.BLACK_WINDSHIELD_BLUR_EXTERIOR);
 
         Boolean success = ImageIO.write(bi, "jpg", new File("./target/resultimage.jpg"));
         System.out.println(success);

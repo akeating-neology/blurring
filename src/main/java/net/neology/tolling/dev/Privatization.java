@@ -12,9 +12,13 @@ public class Privatization {
 
     public enum Strategy {
         BLACK_WINDSHIELD_ONLY,
+        BLACK_EXTERIOR_ONLY,
+        BLACK_WINDSHIELD_BLACK_EXTERIOR,
         BLUR_WINDSHIELD_ONLY,
+        BLUR_EXTERIOR_ONLY,
+        BLUR_WINDSHIELD_BLUR_EXTERIOR,
         BLACK_WINDSHIELD_BLUR_EXTERIOR,
-        BLUR_WINDSHIELD_BLUR_EXTERIOR
+        BLUR_WINDSHIELD_BLACK_EXTERIOR
     }
 
     /**
@@ -25,7 +29,7 @@ public class Privatization {
      * @return
      * @throws IOException
      */
-    public BufferedImage applyPrivatization(BufferedImage input, MantisResponse mantisResponse, int pixelation) throws IOException {
+    public BufferedImage applyPrivatization(BufferedImage input, MantisResponse mantisResponse, int pixelation, Strategy strategy) throws IOException {
 
         MantisResponseData mantisData = mantisResponse.getData().get(0);
         MantisResponseDimension windshield = mantisData.getWindshield();
@@ -60,7 +64,7 @@ public class Privatization {
         }
 
 
-        return applyPrivatization(input, pc, pixelation);
+        return applyPrivatization(input, pc, pixelation, strategy);
     }
 
     /**
@@ -68,20 +72,126 @@ public class Privatization {
      * @param input
      * @param pc
      * @param pixelation
+     * @param strat
      * @return
      * @throws IOException
      */
-    public BufferedImage applyPrivatization(BufferedImage input, PrivacyCords pc, int pixelation) throws IOException {
-        BufferedImage resultImage = resize(input, input.getWidth() / pixelation, input.getHeight() / pixelation);
-        resultImage = resize(resultImage, input.getWidth(), input.getHeight());
+    public BufferedImage applyPrivatization(BufferedImage input, PrivacyCords pc, int pixelation, Strategy strat) throws IOException {
 
+        BufferedImage resultImage = resize(input, input.getWidth(), input.getHeight());
 
-        for (int y = 0; y < input.getHeight(); y++) {
-            for (int x = 0; x < input.getWidth(); x++) {
-                if (isInPrivacyZone(x, y, pc)) {
-                    resultImage.setRGB(x, y, input.getRGB(x, y));
+        switch (strat) {
+            case BLACK_WINDSHIELD_ONLY:
+                for (int y = 0; y < input.getHeight(); y++) {
+                    for (int x = 0; x < input.getWidth(); x++) {
+                        if (isInsideWindow(x, y, pc)) {
+                            resultImage.setRGB(x, y, 0); //Black
+                        }
+                    }
                 }
-            }
+                break;
+            case BLACK_EXTERIOR_ONLY:
+                for (int y = 0; y < input.getHeight(); y++) {
+                    for (int x = 0; x < input.getWidth(); x++) {
+                        if (isOutsideCar(x, y, pc)) {
+                            resultImage.setRGB(x, y, 0); //Black
+                        }
+                    }
+                }
+                break;
+            case BLACK_WINDSHIELD_BLACK_EXTERIOR:
+                for (int y = 0; y < input.getHeight(); y++) {
+                    for (int x = 0; x < input.getWidth(); x++) {
+                        if (isInPrivacyZone(x, y, pc)) {
+                            resultImage.setRGB(x, y, 0); //Black
+                        }
+                    }
+                }
+                break;
+            case BLUR_WINDSHIELD_ONLY:
+                //Blur\Pixelate Whole image
+                resultImage = resize(resultImage, input.getWidth() / pixelation, input.getHeight() / pixelation);
+                resultImage = resize(resultImage, input.getWidth(), input.getHeight());
+                //restore what is not windshield
+                for (int y = 0; y < input.getHeight(); y++) {
+                    for (int x = 0; x < input.getWidth(); x++) {
+                        if (!isInsideWindow(x, y, pc)) {
+                            resultImage.setRGB(x, y, input.getRGB(x,y));
+                        }
+                    }
+                }
+                break;
+            case BLUR_EXTERIOR_ONLY:
+                //Blur\Pixelate Whole image
+                resultImage = resize(resultImage, input.getWidth() / pixelation, input.getHeight() / pixelation);
+                resultImage = resize(resultImage, input.getWidth(), input.getHeight());
+                //retore pixels that are car
+                for (int y = 0; y < input.getHeight(); y++) {
+                    for (int x = 0; x < input.getWidth(); x++) {
+                        if (!isOutsideCar(x, y, pc)) {
+                            resultImage.setRGB(x, y, input.getRGB(x,y));
+                        }
+                    }
+                }
+                break;
+            case BLUR_WINDSHIELD_BLUR_EXTERIOR:
+                //Blur\Pixelate Whole image
+                resultImage = resize(resultImage, input.getWidth() / pixelation, input.getHeight() / pixelation);
+                resultImage = resize(resultImage, input.getWidth(), input.getHeight());
+                //restore pixels that are car, but not windshield
+                for (int y = 0; y < input.getHeight(); y++) {
+                    for (int x = 0; x < input.getWidth(); x++) {
+                        if (isInPrivacyZone(x, y, pc)) {
+                            resultImage.setRGB(x, y, input.getRGB(x, y));
+                        }
+                    }
+                }
+                break;
+            case BLACK_WINDSHIELD_BLUR_EXTERIOR:
+                //Blur\Pixelate Whole image
+                resultImage = resize(resultImage, input.getWidth() / pixelation, input.getHeight() / pixelation);
+                resultImage = resize(resultImage, input.getWidth(), input.getHeight());
+                //restore pixels that are car
+                for (int y = 0; y < input.getHeight(); y++) {
+                    for (int x = 0; x < input.getWidth(); x++) {
+                        if (isInPrivacyZone(x, y, pc)) {
+                            resultImage.setRGB(x, y, input.getRGB(x, y));
+                        }
+                    }
+                }
+                //Blacken windshield
+                for (int y = 0; y < input.getHeight(); y++) {
+                    for (int x = 0; x < input.getWidth(); x++) {
+                        if (isInsideWindow(x, y, pc)) {
+                            resultImage.setRGB(x, y, 0); //Black
+                        }
+                    }
+                }
+                break;
+            case BLUR_WINDSHIELD_BLACK_EXTERIOR:
+                //Blur\Pixelate Whole image
+                resultImage = resize(resultImage, input.getWidth() / pixelation, input.getHeight() / pixelation);
+                resultImage = resize(resultImage, input.getWidth(), input.getHeight());
+                //restore pixels that are not windshield
+                for (int y = 0; y < input.getHeight(); y++) {
+                    for (int x = 0; x < input.getWidth(); x++) {
+                        if (!isInsideWindow(x, y, pc)) {
+                            resultImage.setRGB(x, y, input.getRGB(x,y)); //restore selected pixels
+                        }
+                    }
+                }
+                //Blacken pixels outside the car
+                for (int y = 0; y < input.getHeight(); y++) {
+                    for (int x = 0; x < input.getWidth(); x++) {
+                        if (isOutsideCar(x, y, pc)) {
+                            resultImage.setRGB(x, y, 0); //Black
+                        }
+                    }
+                }
+                break;
+            default:
+                //Do nothing. maybe throw an error?
+                break;
         }
         return resultImage;
     }
@@ -110,12 +220,29 @@ public class Privatization {
      * @param p
      * @return
      */
-    private static boolean isInPrivacyZone(int x, int y, PrivacyCords p) {
+    private boolean isInPrivacyZone(int x, int y, PrivacyCords p) {
+        return ( isOutsideCar(x,y,p) && isInsideWindow(x,y,p) );
+    }
 
-        boolean isOutsidePrivacyZone = ( (x > p.getOutXone() && y > p.getOutYone())
-                && (x < p.getOutXtwo() && y < p.getOutYtwo()) );
-        boolean isInsideWindow = !( (x > p.getWindXone() && y > p.getWindYone())
-                && (x < p.getWindXtwo() && y < p.getWindYtwo()) );
-        return ( isOutsidePrivacyZone && isInsideWindow);
+    /**
+     *
+     * @param x
+     * @param y
+     * @param p
+     * @return
+     */
+    private boolean isOutsideCar(int x, int y, PrivacyCords p) {
+        return ( (x > p.getOutXone() && y > p.getOutYone()) && (x < p.getOutXtwo() && y < p.getOutYtwo()) );
+    }
+
+    /**
+     *
+     * @param x
+     * @param y
+     * @param p
+     * @return
+     */
+    private boolean isInsideWindow(int x, int y, PrivacyCords p) {
+        return !( (x > p.getWindXone() && y > p.getWindYone()) && (x < p.getWindXtwo() && y < p.getWindYtwo()) );
     }
 }
