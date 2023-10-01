@@ -8,7 +8,7 @@ public class PrivacyCords {
     /**
      *
      */
-    private enum Version {MALFORMED,V1,V2};
+    public enum Version {MALFORMED,V1,V2};
 
     //V2 set of cords to also obscure the rest of the image that does not include the vehicle of interest
     private int outXone = -1;

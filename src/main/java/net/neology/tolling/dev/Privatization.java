@@ -3,12 +3,16 @@ package net.neology.tolling.dev;
 import net.neology.tolling.dev.mantis.MantisResponse;
 import net.neology.tolling.dev.mantis.MantisResponseData;
 import net.neology.tolling.dev.mantis.MantisResponseDimension;
+//import org.slf4j.Logger;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.InputMismatchException;
 
 public class Privatization {
+
+//    Logger logger;
 
     public enum Strategy {
         BLACK_WINDSHIELD_ONLY,
@@ -63,7 +67,6 @@ public class Privatization {
             );
         }
 
-
         return applyPrivatization(input, pc, pixelation, strategy);
     }
 
@@ -82,6 +85,8 @@ public class Privatization {
 
         switch (strat) {
             case BLACK_WINDSHIELD_ONLY:
+                if(pc.getMyVersion() == PrivacyCords.Version.MALFORMED)
+                    throw new InputMismatchException("mismatched version or malformed PrivacyCords...");
                 for (int y = 0; y < input.getHeight(); y++) {
                     for (int x = 0; x < input.getWidth(); x++) {
                         if (isInsideWindow(x, y, pc)) {
@@ -91,24 +96,30 @@ public class Privatization {
                 }
                 break;
             case BLACK_EXTERIOR_ONLY:
+                if(pc.getMyVersion() != PrivacyCords.Version.V2)
+                    throw new InputMismatchException("mismatched version or malformed PrivacyCords...");
                 for (int y = 0; y < input.getHeight(); y++) {
                     for (int x = 0; x < input.getWidth(); x++) {
-                        if (isOutsideCar(x, y, pc)) {
+                        if (!isCarOfInterest(x, y, pc)) {
                             resultImage.setRGB(x, y, 0); //Black
                         }
                     }
                 }
                 break;
             case BLACK_WINDSHIELD_BLACK_EXTERIOR:
+                if(pc.getMyVersion() != PrivacyCords.Version.V2)
+                    throw new InputMismatchException("mismatched version or malformed PrivacyCords...");
                 for (int y = 0; y < input.getHeight(); y++) {
                     for (int x = 0; x < input.getWidth(); x++) {
-                        if (isInPrivacyZone(x, y, pc)) {
+                        if (isInClearZone(x, y, pc)) {
                             resultImage.setRGB(x, y, 0); //Black
                         }
                     }
                 }
                 break;
             case BLUR_WINDSHIELD_ONLY:
+                if(pc.getMyVersion() == PrivacyCords.Version.MALFORMED)
+                    throw new InputMismatchException("mismatched version or malformed PrivacyCords...");
                 //Blur\Pixelate Whole image
                 resultImage = resize(resultImage, input.getWidth() / pixelation, input.getHeight() / pixelation);
                 resultImage = resize(resultImage, input.getWidth(), input.getHeight());
@@ -122,39 +133,45 @@ public class Privatization {
                 }
                 break;
             case BLUR_EXTERIOR_ONLY:
+                if(pc.getMyVersion() != PrivacyCords.Version.V2)
+                    throw new InputMismatchException("mismatched version or malformed PrivacyCords...");
                 //Blur\Pixelate Whole image
                 resultImage = resize(resultImage, input.getWidth() / pixelation, input.getHeight() / pixelation);
                 resultImage = resize(resultImage, input.getWidth(), input.getHeight());
                 //retore pixels that are car
                 for (int y = 0; y < input.getHeight(); y++) {
                     for (int x = 0; x < input.getWidth(); x++) {
-                        if (!isOutsideCar(x, y, pc)) {
+                        if (!isCarOfInterest(x, y, pc)) {
                             resultImage.setRGB(x, y, input.getRGB(x,y));
                         }
                     }
                 }
                 break;
             case BLUR_WINDSHIELD_BLUR_EXTERIOR:
+                if(pc.getMyVersion() != PrivacyCords.Version.V2)
+                    throw new InputMismatchException("mismatched version or malformed PrivacyCords...");
                 //Blur\Pixelate Whole image
                 resultImage = resize(resultImage, input.getWidth() / pixelation, input.getHeight() / pixelation);
                 resultImage = resize(resultImage, input.getWidth(), input.getHeight());
                 //restore pixels that are car, but not windshield
                 for (int y = 0; y < input.getHeight(); y++) {
                     for (int x = 0; x < input.getWidth(); x++) {
-                        if (isInPrivacyZone(x, y, pc)) {
+                        if (isInClearZone(x, y, pc)) {
                             resultImage.setRGB(x, y, input.getRGB(x, y));
                         }
                     }
                 }
                 break;
             case BLACK_WINDSHIELD_BLUR_EXTERIOR:
+                if(pc.getMyVersion() != PrivacyCords.Version.V2)
+                    throw new InputMismatchException("mismatched version or malformed PrivacyCords...");
                 //Blur\Pixelate Whole image
                 resultImage = resize(resultImage, input.getWidth() / pixelation, input.getHeight() / pixelation);
                 resultImage = resize(resultImage, input.getWidth(), input.getHeight());
                 //restore pixels that are car
                 for (int y = 0; y < input.getHeight(); y++) {
                     for (int x = 0; x < input.getWidth(); x++) {
-                        if (isInPrivacyZone(x, y, pc)) {
+                        if (isCarOfInterest(x, y, pc)) {
                             resultImage.setRGB(x, y, input.getRGB(x, y));
                         }
                     }
@@ -169,6 +186,8 @@ public class Privatization {
                 }
                 break;
             case BLUR_WINDSHIELD_BLACK_EXTERIOR:
+                if(pc.getMyVersion() != PrivacyCords.Version.V2)
+                    throw new InputMismatchException("mismatched version or malformed PrivacyCords...");
                 //Blur\Pixelate Whole image
                 resultImage = resize(resultImage, input.getWidth() / pixelation, input.getHeight() / pixelation);
                 resultImage = resize(resultImage, input.getWidth(), input.getHeight());
@@ -183,7 +202,7 @@ public class Privatization {
                 //Blacken pixels outside the car
                 for (int y = 0; y < input.getHeight(); y++) {
                     for (int x = 0; x < input.getWidth(); x++) {
-                        if (isOutsideCar(x, y, pc)) {
+                        if (isCarOfInterest(x, y, pc)) {
                             resultImage.setRGB(x, y, 0); //Black
                         }
                     }
@@ -220,8 +239,8 @@ public class Privatization {
      * @param p
      * @return
      */
-    private boolean isInPrivacyZone(int x, int y, PrivacyCords p) {
-        return ( isOutsideCar(x,y,p) && isInsideWindow(x,y,p) );
+    private boolean isInClearZone(int x, int y, PrivacyCords p) {
+        return ( isCarOfInterest(x,y,p) && !isInsideWindow(x,y,p) );
     }
 
     /**
@@ -231,7 +250,7 @@ public class Privatization {
      * @param p
      * @return
      */
-    private boolean isOutsideCar(int x, int y, PrivacyCords p) {
+    private boolean isCarOfInterest(int x, int y, PrivacyCords p) {
         return ( (x > p.getOutXone() && y > p.getOutYone()) && (x < p.getOutXtwo() && y < p.getOutYtwo()) );
     }
 
@@ -243,6 +262,6 @@ public class Privatization {
      * @return
      */
     private boolean isInsideWindow(int x, int y, PrivacyCords p) {
-        return !( (x > p.getWindXone() && y > p.getWindYone()) && (x < p.getWindXtwo() && y < p.getWindYtwo()) );
+        return ( (x > p.getWindXone() && y > p.getWindYone()) && (x < p.getWindXtwo() && y < p.getWindYtwo()) );
     }
 }
